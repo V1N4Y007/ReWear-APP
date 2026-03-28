@@ -1,92 +1,96 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useContext } from 'react';
+import {
+  View, Text, StyleSheet, SafeAreaView,
+  ScrollView, TouchableOpacity, Alert
+} from 'react-native';
+import { AuthContext } from '../context/AuthContext';
+import CustomButton from '../components/CustomButton';
+import CustomInput from '../components/CustomInput';
+import { Colors, Spacing, Typography, Radius } from '../theme';
 
 export default function LoginScreen({ navigation }: any) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { login } = useContext(AuthContext);
+
+  const handleLogin = async () => {
+    if (!email || !password) { Alert.alert('Missing fields', 'Please fill in all fields.'); return; }
+    setLoading(true);
+    try {
+      await login(email.trim().toLowerCase(), password);
+    } catch (e: any) {
+      Alert.alert('Login Failed', e.response?.data?.message || 'Invalid credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        {/* Hero */}
+        <View style={styles.hero}>
+          <View style={styles.logoCircle}>
+            <Text style={styles.logoEmoji}>♻️</Text>
+          </View>
+          <Text style={styles.appName}>ReWear</Text>
+          <Text style={styles.tagline}>Community Clothing Exchange</Text>
+        </View>
 
-      <Text style={styles.logo}>ReWear</Text>
+        {/* Form Card */}
+        <View style={styles.card}>
+          <Text style={styles.heading}>Welcome back</Text>
+          <Text style={styles.subheading}>Sign in to continue</Text>
 
-      <Text style={styles.subtitle}>
-        Community Clothing Exchange
-      </Text>
+          <CustomInput
+            label="Email"
+            placeholder="you@example.com"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+          />
+          <CustomInput
+            label="Password"
+            placeholder="Your password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
 
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-      />
+          <CustomButton title="Sign In" onPress={handleLogin} loading={loading} style={{ marginTop: Spacing.sm }} />
 
-      <TextInput
-        placeholder="Password"
-        secureTextEntry
-        style={styles.input}
-      />
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Dashboard')}
-      >
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.link}>
-        Create New Account
-      </Text>
-
-    </View>
+          <TouchableOpacity style={styles.switchRow} onPress={() => navigation.navigate('Register')}>
+            <Text style={styles.switchText}>Don't have an account? </Text>
+            <Text style={[styles.switchText, styles.switchLink]}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-
-container:{
-flex:1,
-justifyContent:'center',
-padding:25,
-backgroundColor:'#F5F7FA'
-},
-
-logo:{
-fontSize:36,
-fontWeight:'bold',
-textAlign:'center',
-marginBottom:10,
-color:'#333'
-},
-
-subtitle:{
-textAlign:'center',
-marginBottom:40,
-color:'#777'
-},
-
-input:{
-borderWidth:1,
-borderColor:'#ddd',
-borderRadius:10,
-padding:14,
-marginBottom:15,
-backgroundColor:'white'
-},
-
-button:{
-backgroundColor:'#4CAF50',
-padding:15,
-borderRadius:10
-},
-
-buttonText:{
-color:'white',
-textAlign:'center',
-fontWeight:'bold',
-fontSize:16
-},
-
-link:{
-marginTop:20,
-textAlign:'center',
-color:'#007AFF'
-}
-
+  safe: { flex: 1, backgroundColor: Colors.primary },
+  scroll: { flexGrow: 1 },
+  hero: { alignItems: 'center', paddingTop: Spacing.xxl, paddingBottom: Spacing.xl },
+  logoCircle: {
+    width: 80, height: 80, borderRadius: 40,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    justifyContent: 'center', alignItems: 'center', marginBottom: Spacing.md,
+  },
+  logoEmoji: { fontSize: 36 },
+  appName: { fontSize: 34, fontWeight: '800', color: Colors.white, letterSpacing: 1 },
+  tagline: { ...Typography.body, color: 'rgba(255,255,255,0.8)', marginTop: Spacing.xs },
+  card: {
+    flex: 1, backgroundColor: Colors.background,
+    borderTopLeftRadius: 32, borderTopRightRadius: 32,
+    padding: Spacing.lg, paddingTop: Spacing.xl,
+  },
+  heading: { ...Typography.h2, marginBottom: Spacing.xs },
+  subheading: { ...Typography.body, color: Colors.textSecondary, marginBottom: Spacing.lg },
+  switchRow: { flexDirection: 'row', justifyContent: 'center', marginTop: Spacing.lg },
+  switchText: { ...Typography.body, color: Colors.textSecondary },
+  switchLink: { color: Colors.primary, fontWeight: '600' },
 });

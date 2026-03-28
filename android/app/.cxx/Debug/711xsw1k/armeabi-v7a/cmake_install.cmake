@@ -44,6 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("C:/Users/abc/Downloads/MAD REWEAR/RewearApp/android/app/.cxx/Debug/711xsw1k/armeabi-v7a/rnasyncstorage_autolinked_build/cmake_install.cmake")
   include("C:/Users/abc/Downloads/MAD REWEAR/RewearApp/android/app/.cxx/Debug/711xsw1k/armeabi-v7a/safeareacontext_autolinked_build/cmake_install.cmake")
   include("C:/Users/abc/Downloads/MAD REWEAR/RewearApp/android/app/.cxx/Debug/711xsw1k/armeabi-v7a/rnscreens_autolinked_build/cmake_install.cmake")
 
