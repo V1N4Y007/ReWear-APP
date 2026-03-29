@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, SafeAreaView, ScrollView, Alert
+  View, Text, StyleSheet, SafeAreaView, ScrollView, Alert, Image, TouchableOpacity, ActivityIndicator
 } from 'react-native';
+import { launchCamera, launchImageLibrary, ImagePickerResponse } from 'react-native-image-picker';
 import api from '../services/api';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
@@ -18,16 +19,39 @@ export default function AddItemScreen({ navigation }: any) {
   const [type, setType] = useState('');
   const [size, setSize] = useState('');
   const [condition, setCondition] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [localImageUri, setLocalImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState('');
+
+  const handleImagePicker = () => {
+    Alert.alert('Select Image', 'Choose an option', [
+      { text: 'Camera', onPress: () => openCamera() },
+      { text: 'Gallery', onPress: () => openGallery() },
+      { text: 'Cancel', style: 'cancel' }
+    ]);
+  };
+
+  const handlePickerResponse = (response: ImagePickerResponse) => {
+    if (response.didCancel || response.errorCode || !response.assets?.[0]?.base64) return;
+    const asset = response.assets[0];
+    const base64Data = `data:${asset.type || 'image/jpeg'};base64,${asset.base64}`;
+    setLocalImageUri(base64Data); // Using the base64 data directly as the local UI preview string
+  };
+
+  const pickerOptions: any = { mediaType: 'photo', quality: 0.5, maxWidth: 800, maxHeight: 800, includeBase64: true };
+
+  const openCamera = () => launchCamera(pickerOptions, handlePickerResponse);
+  const openGallery = () => launchImageLibrary(pickerOptions, handlePickerResponse);
 
   const handleAdd = async () => {
-    if (!title || !description || !category || !type || !size || !condition) {
-      Alert.alert('Incomplete', 'Please fill in all required fields.'); return;
+    if (!title || !description || !category || !type || !size || !condition || !localImageUri) {
+      Alert.alert('Incomplete', 'Please fill in all required fields and upload an image.'); return;
     }
     setLoading(true);
+    setUploadProgress('Saving to database...');
     try {
-      await api.post('/items', { title, description, category, type, size, condition, tags: [], images: imageUrl ? [imageUrl] : [] });
+      // Send the compressed base64 string directly to MongoDB via the backend array
+      await api.post('/items', { title, description, category, type, size, condition, tags: [], images: [localImageUri] });
 
       // Fire instant notification confirming listing
       sendLocalNotification(
@@ -40,9 +64,10 @@ export default function AddItemScreen({ navigation }: any) {
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
     } catch (e: any) {
-      Alert.alert('Error', e.response?.data?.message || 'Failed to list item.');
+      Alert.alert('Error', e.response?.data?.message || e.message || 'Failed to list item.');
     } finally {
       setLoading(false);
+      setUploadProgress('');
     }
   };
 
@@ -74,14 +99,19 @@ export default function AddItemScreen({ navigation }: any) {
         <Text style={styles.sectionLabel}>Condition *</Text>
         <ChipSelector options={CONDITIONS} value={condition} onSelect={setCondition} />
 
-        <CustomInput
-          label="Image URL (optional)"
-          placeholder="https://example.com/image.jpg"
-          value={imageUrl} onChangeText={setImageUrl}
-          autoCapitalize="none"
-        />
+        <Text style={styles.sectionLabel}>Item Photo *</Text>
+        <TouchableOpacity style={styles.imagePicker} onPress={handleImagePicker}>
+          {localImageUri ? (
+            <Image source={{ uri: localImageUri }} style={styles.previewImage} resizeMode="cover" />
+          ) : (
+            <View style={styles.pickerPlaceholder}>
+              <Text style={styles.pickerIcon}>📷</Text>
+              <Text style={styles.pickerText}>Tap to Add Photo</Text>
+            </View>
+          )}
+        </TouchableOpacity>
 
-        <CustomButton title="Publish Item" onPress={handleAdd} loading={loading} style={{ marginTop: Spacing.md }} />
+        <CustomButton title={loading ? uploadProgress : "Publish Item"} onPress={handleAdd} loading={loading} style={{ marginTop: Spacing.md }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -105,4 +135,14 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   chipText: { ...Typography.caption, color: Colors.textSecondary, fontWeight: '600' },
   chipTextActive: { color: Colors.white },
+  imagePicker: {
+    height: 200, backgroundColor: Colors.card, borderRadius: Radius.lg,
+    borderWidth: 2, borderColor: Colors.border, borderStyle: 'dashed',
+    overflow: 'hidden', justifyContent: 'center', alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  previewImage: { width: '100%', height: '100%' },
+  pickerPlaceholder: { alignItems: 'center' },
+  pickerIcon: { fontSize: 32, marginBottom: 8 },
+  pickerText: { ...Typography.label, color: Colors.textSecondary },
 });
