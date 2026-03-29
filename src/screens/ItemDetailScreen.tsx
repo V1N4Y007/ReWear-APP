@@ -7,12 +7,17 @@ import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import CustomButton from '../components/CustomButton';
 import InfoBadge from '../components/InfoBadge';
+import { sendLocalNotification, scheduleNotification } from '../services/NotificationService';
 import { Colors, Radius, Shadow, Spacing, Typography } from '../theme';
 
 export default function ItemDetailScreen({ route, navigation }: any) {
   const { item } = route.params;
   const { user } = useContext(AuthContext);
-  const isOwner = user?._id === item.uploader?._id;
+  // MongoDB returns _id on populated objects; the auth token gives us id (without underscore).
+  // Compare both formats to be safe.
+  const uploaderId = item.uploader?._id ?? item.uploader?.id ?? item.uploader;
+  const currentUserId = user?._id ?? user?.id;
+  const isOwner = uploaderId && currentUserId && String(uploaderId) === String(currentUserId);
 
   const handleSwap = () => {
     Alert.alert(
@@ -23,8 +28,30 @@ export default function ItemDetailScreen({ route, navigation }: any) {
         {
           text: 'Send Request', onPress: async () => {
             try {
-              await api.post('/swaps/request', { receiverId: item.uploader._id, requestedItemId: item._id });
-              Alert.alert('✅ Sent!', 'Your swap request has been sent.');
+              // Guard: make sure we have a valid receiver ID
+              const receiverId = item.uploader?._id ?? item.uploader?.id ?? item.uploader;
+              if (!receiverId) {
+                Alert.alert('Error', 'Could not identify the item owner. Please go back and try again.');
+                return;
+              }
+              await api.post('/swaps/request', { receiverId, requestedItemId: item._id });
+
+              // 1. Instant notification confirming the swap was sent
+              sendLocalNotification(
+                '🔄 Swap Request Sent!',
+                `Your request for "${item.title}" has been sent successfully.`,
+                'Swaps'
+              );
+
+              // 2. Scheduled reminder after 1 minute
+              scheduleNotification(
+                '⏰ Swap Reminder',
+                'Check your pending swap requests to see if there are any updates!',
+                60 * 1000, // 1 minute
+                'Swaps'
+              );
+
+              Alert.alert('✅ Sent!', 'Your swap request has been sent. Check Swaps tab for updates.');
               navigation.goBack();
             } catch (e: any) {
               Alert.alert('Error', e.response?.data?.message || 'Failed.');

@@ -1,6 +1,7 @@
 const Swap = require('../models/Swap');
 const Item = require('../models/Item');
 const User = require('../models/User');
+const { sendPushNotification } = require('../services/fcmService');
 
 const requestSwap = async (req, res) => {
   try {
@@ -22,6 +23,19 @@ const requestSwap = async (req, res) => {
     });
     
     const createdSwap = await swap.save();
+
+    // --- PUSH NOTIFICATION to item owner ---
+    const receiver = await User.findById(receiverId);
+    const requester = await User.findById(req.user.id);
+    if (receiver?.fcmToken) {
+      await sendPushNotification(
+        receiver.fcmToken,
+        '🔄 New Swap Request',
+        `${requester.name} wants to swap "${requestedItem.title}" with you!`,
+        { screen: 'Swaps' }
+      );
+    }
+
     res.status(201).json(createdSwap);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -43,7 +57,21 @@ const respondToSwap = async (req, res) => {
     
     swap.status = status;
     const updatedSwap = await swap.save();
-    
+
+    // --- PUSH NOTIFICATION to requester ---
+    const requesterUser = await User.findById(swap.requester);
+    if (requesterUser?.fcmToken) {
+      const isAccepted = status === 'Accepted';
+      await sendPushNotification(
+        requesterUser.fcmToken,
+        isAccepted ? '✅ Swap Accepted!' : '❌ Swap Declined',
+        isAccepted
+          ? `Your swap request for "${swap.requestedItem?.title}" was accepted!`
+          : `Your swap request for "${swap.requestedItem?.title}" was declined.`,
+        { screen: 'Swaps' }
+      );
+    }
+
     if (status === 'Accepted') {
       // Mark requested item as unavailable
       const item = await Item.findById(swap.requestedItem._id);

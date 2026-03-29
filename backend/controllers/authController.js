@@ -28,6 +28,11 @@ const registerUser = async (req, res) => {
     });
 
     if (user) {
+      // Save device token if provided (for push notifications)
+      if (req.body.fcmToken) {
+        user.fcmToken = req.body.fcmToken;
+        await user.save();
+      }
       res.status(201).json({
         _id: user._id,
         name: user.name,
@@ -51,6 +56,11 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
+      // Save device FCM token if provided
+      if (req.body.fcmToken) {
+        user.fcmToken = req.body.fcmToken;
+        await user.save();
+      }
       res.json({
         _id: user._id,
         name: user.name,

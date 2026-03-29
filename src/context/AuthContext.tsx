@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
+import { getFCMToken, requestPermission } from '../services/FCMService';
 
 export const AuthContext = createContext<any>(null);
 
@@ -27,7 +28,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
+    // Attempt to get FCM Token
+    await requestPermission();
+    const fcmToken = await getFCMToken();
+
+    const response = await api.post('/auth/login', { email, password, fcmToken });
     const { token, ...userData } = response.data;
     await AsyncStorage.setItem('userToken', token);
     await AsyncStorage.setItem('userInfo', JSON.stringify(userData));
@@ -35,7 +40,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const response = await api.post('/auth/register', { name, email, password });
+    // Attempt to get FCM Token
+    await requestPermission();
+    const fcmToken = await getFCMToken();
+
+    const response = await api.post('/auth/register', { name, email, password, fcmToken });
     const { token, ...userData } = response.data;
     await AsyncStorage.setItem('userToken', token);
     await AsyncStorage.setItem('userInfo', JSON.stringify(userData));

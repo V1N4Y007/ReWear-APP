@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useContext, useEffect, useRef } from 'react';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ActivityIndicator, View, Text, Platform } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 import LoginScreen from './src/screens/LoginScreen';
@@ -14,6 +14,8 @@ import SwapsScreen from './src/screens/SwapsScreen';
 import AdminScreen from './src/screens/AdminScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import LoadingScreen from './src/screens/LoadingScreen';
+import NotificationBanner from './src/components/NotificationBanner';
+import { initFCMListeners } from './src/services/FCMService';
 import { Colors, Shadow } from './src/theme';
 
 const Stack = createNativeStackNavigator();
@@ -81,13 +83,30 @@ const MainTabs = () => {
 
 const AppNav = () => {
   const { user, isLoading } = useContext(AuthContext);
+  // Keep a ref to the navigation container so the notification handler can navigate
+  const navRef = useRef<NavigationContainerRef<any>>(null);
+
+  useEffect(() => {
+    // Initialise Firebase Cloud Messaging listeners
+    const unsub = initFCMListeners((screen: string) => {
+      if (!navRef.current) return;
+      if (screen === 'Swaps') {
+        navRef.current.navigate('MainTabs', { screen: 'Swaps' });
+      } else if (screen === 'Home') {
+        navRef.current.navigate('MainTabs', { screen: 'Home' });
+      }
+    });
+    
+    // Cleanup the listener when AppNav unmounts
+    return unsub;
+  }, []);
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navRef}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
           <>
@@ -129,6 +148,8 @@ const AppNav = () => {
 export default function App() {
   return (
     <AuthProvider>
+      {/* NotificationBanner is absolute-positioned and floats above all screens */}
+      <NotificationBanner />
       <AppNav />
     </AuthProvider>
   );

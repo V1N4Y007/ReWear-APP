@@ -5,6 +5,7 @@ import {
 import api from '../services/api';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
+import { sendLocalNotification } from '../services/NotificationService';
 import { Colors, Radius, Spacing, Typography } from '../theme';
 
 const CONDITIONS = ['New', 'Like New', 'Good', 'Fair'];
@@ -27,6 +28,14 @@ export default function AddItemScreen({ navigation }: any) {
     setLoading(true);
     try {
       await api.post('/items', { title, description, category, type, size, condition, tags: [], images: imageUrl ? [imageUrl] : [] });
+
+      // Fire instant notification confirming listing
+      sendLocalNotification(
+        '🎉 Item Listed!',
+        `"${title}" is pending admin approval. You earned 10 points!`,
+        'Home'
+      );
+
       Alert.alert('🎉 Listed!', 'Your item is pending Admin approval. You earned 10 points!', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);

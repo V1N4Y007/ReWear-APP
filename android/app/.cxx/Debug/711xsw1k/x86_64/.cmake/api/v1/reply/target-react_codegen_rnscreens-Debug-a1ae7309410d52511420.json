@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "C:/Users/abc/Downloads/MAD REWEAR/RewearApp/android/app/build/intermediates/cxx/Debug/711xsw1k/obj/arm64-v8a/libreact_codegen_rnscreens.so"
+			"path" : "C:/Users/abc/Downloads/MAD REWEAR/RewearApp/android/app/build/intermediates/cxx/Debug/711xsw1k/obj/x86_64/libreact_codegen_rnscreens.so"
 		}
 	],
 	"backtrace" : 1,
@@ -180,17 +180,17 @@
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/abc/.gradle/caches/9.0.0/transforms/df62f4a3c6818dc3cc09553936c6f2fd/transformed/react-android-0.84.1-debug/prefab/modules/reactnative/include"
+					"path" : "C:/Users/abc/.gradle/caches/9.0.0/transforms/a6bcc9b81e1a4ac6ba34dc7a0342480c/transformed/react-android-0.84.1-debug/prefab/modules/reactnative/include"
 				},
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/abc/.gradle/caches/9.0.0/transforms/df62f4a3c6818dc3cc09553936c6f2fd/transformed/react-android-0.84.1-debug/prefab/modules/jsi/include"
+					"path" : "C:/Users/abc/.gradle/caches/9.0.0/transforms/a6bcc9b81e1a4ac6ba34dc7a0342480c/transformed/react-android-0.84.1-debug/prefab/modules/jsi/include"
 				},
 				{
 					"backtrace" : 2,
 					"isSystem" : true,
-					"path" : "C:/Users/abc/.gradle/caches/9.0.0/transforms/6cb94eb4240b26bae55579cb79d8f81a/transformed/fbjni-0.7.0/prefab/modules/fbjni/include"
+					"path" : "C:/Users/abc/.gradle/caches/9.0.0/transforms/a78b50b6471134c1c1f9afd331929f14/transformed/fbjni-0.7.0/prefab/modules/fbjni/include"
 				}
 			],
 			"language" : "CXX",
@@ -235,17 +235,17 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "C:\\Users\\abc\\.gradle\\caches\\9.0.0\\transforms\\df62f4a3c6818dc3cc09553936c6f2fd\\transformed\\react-android-0.84.1-debug\\prefab\\modules\\reactnative\\libs\\android.arm64-v8a\\libreactnative.so",
+				"fragment" : "C:\\Users\\abc\\.gradle\\caches\\9.0.0\\transforms\\a6bcc9b81e1a4ac6ba34dc7a0342480c\\transformed\\react-android-0.84.1-debug\\prefab\\modules\\reactnative\\libs\\android.x86_64\\libreactnative.so",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "C:\\Users\\abc\\.gradle\\caches\\9.0.0\\transforms\\df62f4a3c6818dc3cc09553936c6f2fd\\transformed\\react-android-0.84.1-debug\\prefab\\modules\\jsi\\libs\\android.arm64-v8a\\libjsi.so",
+				"fragment" : "C:\\Users\\abc\\.gradle\\caches\\9.0.0\\transforms\\a6bcc9b81e1a4ac6ba34dc7a0342480c\\transformed\\react-android-0.84.1-debug\\prefab\\modules\\jsi\\libs\\android.x86_64\\libjsi.so",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "C:\\Users\\abc\\.gradle\\caches\\9.0.0\\transforms\\6cb94eb4240b26bae55579cb79d8f81a\\transformed\\fbjni-0.7.0\\prefab\\modules\\fbjni\\libs\\android.arm64-v8a\\libfbjni.so",
+				"fragment" : "C:\\Users\\abc\\.gradle\\caches\\9.0.0\\transforms\\a78b50b6471134c1c1f9afd331929f14\\transformed\\fbjni-0.7.0\\prefab\\modules\\fbjni\\libs\\android.x86_64\\libfbjni.so",
 				"role" : "libraries"
 			},
 			{

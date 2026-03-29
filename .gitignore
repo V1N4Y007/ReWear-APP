@@ -52,3 +52,14 @@ Podfile.lock
 
 # Coverage
 coverage/
+
+# Firebase & Secrets
+android/app/google-services.json
+backend/firebase-service-account.json
+
+# Debug scripts
+backend/check-token.js
+backend/debug-fcm.js
+backend/fcm-out.txt
+backend/get-test-ids.js
+backend/test-push.js
