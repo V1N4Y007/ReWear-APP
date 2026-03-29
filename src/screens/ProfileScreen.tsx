@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', alignItems: 'center',
     marginBottom: Spacing.md, ...Shadow.md,
   },
-  pointsLabel: { color: 'rgba(255,255,255,0.8)', ...Typography.label },
+  pointsLabel: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.8)' },
   pointsValue: { color: Colors.white, fontSize: 36, fontWeight: '800' },
   pointsEmoji: { fontSize: 48 },
   statsRow: { flexDirection: 'row', backgroundColor: Colors.card, borderRadius: Radius.lg, marginBottom: Spacing.lg, ...Shadow.sm },

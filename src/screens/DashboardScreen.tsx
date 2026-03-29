@@ -43,21 +43,9 @@ export default function DashboardScreen({ navigation }: any) {
       <View style={styles.topBar}>
         <View>
           <Text style={styles.greeting}>Hello, {user?.name?.split(' ')[0]} 👋</Text>
-          <Text style={styles.subGreeting}>Discover something new</Text>
+          <Text style={styles.subGreeting}>Discover sustainable fashion</Text>
         </View>
-        <View style={styles.topActions}>
-          {user?.role === 'admin' && (
-            <TouchableOpacity style={[styles.pill, { backgroundColor: Colors.primary }]} onPress={() => navigation.navigate('Admin')}>
-              <Text style={styles.pillText}>Admin</Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity style={[styles.pill, { backgroundColor: Colors.primaryDark }]} onPress={() => navigation.navigate('Swaps')}>
-            <Text style={styles.pillText}>Swaps</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.pill, { backgroundColor: Colors.textSecondary }]} onPress={() => navigation.navigate('Profile')}>
-            <Text style={styles.pillText}>Profile</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={{ fontSize: 28 }}>♻️</Text>
       </View>
 
       {/* Points Banner */}
@@ -124,12 +112,9 @@ export default function DashboardScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.sm },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.sm, backgroundColor: Colors.card, ...Shadow.sm },
   greeting: { ...Typography.h2, fontSize: 20 },
   subGreeting: { ...Typography.bodySmall, marginTop: 2 },
-  topActions: { flexDirection: 'row', gap: 6 },
-  pill: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: Radius.full },
-  pillText: { color: Colors.white, fontSize: 11, fontWeight: '600' },
   pointsBanner: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     marginHorizontal: Spacing.md, marginBottom: Spacing.sm,
