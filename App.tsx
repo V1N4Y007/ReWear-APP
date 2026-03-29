@@ -13,6 +13,7 @@ import ItemDetailScreen from './src/screens/ItemDetailScreen';
 import SwapsScreen from './src/screens/SwapsScreen';
 import AdminScreen from './src/screens/AdminScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import LoadingScreen from './src/screens/LoadingScreen';
 import { Colors, Shadow } from './src/theme';
 
 const Stack = createNativeStackNavigator();
@@ -82,11 +83,7 @@ const AppNav = () => {
   const { user, isLoading } = useContext(AuthContext);
 
   if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   return (
