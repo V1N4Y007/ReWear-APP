@@ -12,9 +12,15 @@ let initialized = false;
 const initFirebase = () => {
   if (initialized) return;
   try {
-    // Use application default or service account file
-    const serviceAccountPath = path.join(__dirname, '../firebase-service-account.json');
-    const serviceAccount = require(serviceAccountPath);
+    let serviceAccount;
+    // Check if running on Vercel with Environment Variables
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    } else {
+      // Fallback for Local Development
+      const serviceAccountPath = path.join(__dirname, '../firebase-service-account.json');
+      serviceAccount = require(serviceAccountPath);
+    }
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
